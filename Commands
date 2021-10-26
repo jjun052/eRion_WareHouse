@@ -1,0 +1,76 @@
+source ~/.bashrc file
+edit ~/.bashrc file
+export LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libgomp.so.1
+
+
+
+*How to set static IP
+
+sudo nano /etc/network/interfaces
+- Uncomment and comment last 5 lines to activate/deactivate
+
+
+
+*How to unlock folders
+
+sudo chmod 777 [path] -R
+
+
+*To check current cuda and CuDNN version:
+
+sudo apt search cudnn | grep installed
+
+
+
+Camera Launch = 
+$ roslaunch ros_deep_learning detectnet.ros1.launch input:=csi://0 output:=display://0
+
+
+
+Re-trained Camera Run:
+
+detectnet --model=models/erion/ssd-mobilenet.onnx --labels=models/erion/labels.txt --input-blob=input_0 --output-cvg=scores --output-bbox=boxes csi://0
+
+
+
+Update the Code: 
+sudo make install
+ step under /usr/lib/python*/dist-packages/. If you update the code, remember to run it again.
+
+
+ROS Related-----
+
+
+Running your retrained ssd model on ROS (detectnet.ros1.launch) 
+-> roslaunch ros_deep_learning detectnet.ros1.launch model_path:=/home/erion/catkin_ros_ws/src/jetson-inference/python/training/detection/ssd/models/erion/ssd-mobilenet.onnx class_labels_path:=/home/erion/catkin_ros_ws/src/jetson-inference/python/training/detection/ssd/models/erion/labels.txt input:=v4l2:///dev/video0 input_blob:=input_0 output_cvg:=scores output_bbox:=boxes output:=display://0
+
+
+Retrained Model[Person] (Person, 7000imgs, over 30 epochs)
+-> roslaunch ros_deep_learning detectnet.ros1.launch model_path:=/home/erion/catkin_ros_ws/src/jetson-inference/python/training/detection/ssd/models/erion4/ssd-mobilenet.onnx class_labels_path:=/home/erion/catkin_ros_ws/src/jetson-inference/python/training/detection/ssd/models/erion4/labels.txt input:=v4l2:///dev/video0 input_blob:=input_0 output_cvg:=scores output_bbox:=boxes output:=display://0
+
+Retrained Model[Vehicle Registration Plate, Person] (5000, 30 epochs)
+-> roslaunch ros_deep_learning detectnet.ros1.launch model_path:=/home/erion/catkin_ros_ws/src/jetson-inference/python/training/detection/ssd/models/erion_pnc3/ssd-mobilenet.onnx class_labels_path:=/home/erion/catkin_ros_ws/src/jetson-inference/python/training/detection/ssd/models/erion_pnc3/labels.txt input:=v4l2:///dev/video0 input_blob:=input_0 output_cvg:=scores output_bbox:=boxes output:=display://0
+
+
+
+
+Detection Topic
+rostopic echo /detectnet/detections
+
+
+YDLidar X4 Related----
+
+sudo chmod 666 /dev/ttyUSB0
+
+Launch Lidar: 
+roslaunch ydlidar_ros X4.launch
+
+Launch Rviz and Hector_Slam
+roslaunch hector_slam_launch tutorial.launch
+
+
+
+
+Resume Retraining Command:
+
+python3 train_ssd.py --data=data/erion_pnc --model-dir=models/erion_pnc2 --batch-size=4 --epochs=30 --resume=models/erion_pnc2/mb1-ssd-Epoch-5-Loss-3.898276518552731.pth
